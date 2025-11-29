@@ -132,6 +132,22 @@ export const api = {
   deleteRequest: async (requestId) => {
     const response = await apiClient.delete(`/requests/${requestId}`);
     return response.data;
+  },
+
+  // Donation History
+  getDonationHistory: async () => {
+    const response = await apiClient.get('/donation-history');
+    return response.data;
+  },
+
+  getDonationHistoryByDonor: async (donorId) => {
+    const response = await apiClient.get(`/donation-history/donor/${donorId}`);
+    return response.data;
+  },
+
+  createDonationHistory: async (historyData) => {
+    const response = await apiClient.post('/donation-history', historyData);
+    return response.data;
   }
 };
 

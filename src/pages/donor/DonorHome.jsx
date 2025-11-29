@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Package, TrendingUp, Heart, Clock, Plus } from 'lucide-react';
+import { Package, TrendingUp, Heart, Clock, Plus, CheckCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useData } from '../../contexts/DataContext';
+import { api } from '../../services/api';
 import { Link } from 'react-router-dom';
 import './DonorPages.css';
 
 const DonorHome = () => {
   const { user } = useAuth();
   const { donations, getAnalytics } = useData();
+  const [donationHistory, setDonationHistory] = useState([]);
   const [stats, setStats] = useState({
     total: 0,
     active: 0,
@@ -25,6 +27,19 @@ const DonorHome = () => {
       totalWeight: userDonations.reduce((sum, d) => sum + parseFloat(d.weight || 0), 0),
     });
   }, [donations, user.id]);
+
+  useEffect(() => {
+    // Fetch donation history
+    const fetchHistory = async () => {
+      try {
+        const history = await api.getDonationHistoryByDonor(user.id);
+        setDonationHistory(history);
+      } catch (error) {
+        console.error('Error fetching donation history:', error);
+      }
+    };
+    fetchHistory();
+  }, [user.id]);
 
   const statCards = [
     {
@@ -147,6 +162,59 @@ const DonorHome = () => {
                   <span className="meta-item">
                     <Clock size={16} />
                     Expires: {new Date(donation.expiryDate).toLocaleDateString()}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Donation History Section */}
+      <div className="recent-section">
+        <div className="section-header">
+          <h2>Donation History</h2>
+          <span className="badge badge-info">{donationHistory.length} donated</span>
+        </div>
+
+        {donationHistory.length === 0 ? (
+          <div className="empty-state">
+            <CheckCircle size={48} />
+            <h3>No donation history yet</h3>
+            <p>Your completed donations will appear here</p>
+          </div>
+        ) : (
+          <div className="donations-list">
+            {donationHistory.slice(0, 5).map((history) => (
+              <motion.div
+                key={history.id}
+                className="donation-card"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                whileHover={{ y: -4 }}
+              >
+                <div className="donation-header">
+                  <div>
+                    <h3>{history.title}</h3>
+                    <p className="donation-category">{history.category}</p>
+                  </div>
+                  <span className="badge badge-success">
+                    <CheckCircle size={14} /> Donated
+                  </span>
+                </div>
+                <p className="donation-description">{history.description}</p>
+                <div className="donation-meta">
+                  <span className="meta-item">
+                    <Package size={16} />
+                    {history.weight} {history.unit}
+                  </span>
+                  <span className="meta-item">
+                    <Heart size={16} />
+                    Received by: {history.recipientName}
+                  </span>
+                  <span className="meta-item">
+                    <Clock size={16} />
+                    {new Date(history.donatedAt).toLocaleDateString()}
                   </span>
                 </div>
               </motion.div>

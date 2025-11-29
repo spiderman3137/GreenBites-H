@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Search, Package, MapPin, Clock, Calendar, Filter, Heart } from 'lucide-react';
 import { useData } from '../../contexts/DataContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { api } from '../../services/api';
 import '../SharedPages.css';
 import '../donor/DonorPages.css';
 
@@ -25,29 +26,55 @@ const RecipientBrowse = () => {
 
   const handleRequest = async (donation) => {
     try {
+      console.log('Requesting donation:', donation);
+      
+      // Create donation history entry
+      const historyData = {
+        donorId: donation.donorId,
+        donorName: donation.donorName,
+        recipientId: user.id,
+        recipientName: user.organization || user.name,
+        title: donation.title,
+        description: donation.description,
+        category: donation.category,
+        weight: parseFloat(donation.weight) || 0,
+        unit: donation.unit,
+        pickupLocation: donation.pickupLocation,
+        status: 'donated'
+      };
+      
+      console.log('Creating donation history:', historyData);
+      await api.createDonationHistory(historyData);
+      
       // Create a request from the donation
-      await createRequest({
+      const requestData = {
         recipientId: user.id,
         recipientName: user.organization || user.name,
         title: donation.title,
         description: donation.description,
         categories: [donation.category],
-        quantity: donation.weight,
+        quantity: parseFloat(donation.weight) || 0,
         unit: donation.unit,
         urgency: 'medium',
         pickupAvailable: true,
         deliveryAddress: donation.pickupLocation,
         status: 'approved'
-      });
+      };
+
+      console.log('Creating request with data:', requestData);
+      await createRequest(requestData);
 
       // Delete the donation from donations collection
+      console.log('Deleting donation:', donation.id);
       await deleteDonation(donation.id);
 
       setMessage({ type: 'success', text: 'Request sent successfully! Donation has been claimed.' });
       setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     } catch (error) {
       console.error('Request error:', error);
-      setMessage({ type: 'error', text: 'Failed to send request. Please try again.' });
+      console.error('Error response:', error.response?.data);
+      const errorMsg = error.response?.data?.message || 'Failed to send request. Please try again.';
+      setMessage({ type: 'error', text: errorMsg });
       setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     }
   };
