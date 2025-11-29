@@ -123,11 +123,8 @@ const DashboardLayout = ({ children, role }) => {
             <input type="text" placeholder="Search..." />
           </div>
           <div className="header-actions">
-            <button className="icon-btn" onClick={toggleDarkMode} title={darkMode ? 'Light Mode' : 'Dark Mode'}>
+            <button className="icon-btn" onClick={toggleDarkMode} title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
               {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-            <button className="icon-btn">
-              <User size={20} />
             </button>
           </div>
         </div>
