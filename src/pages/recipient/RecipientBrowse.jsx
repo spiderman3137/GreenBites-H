@@ -58,7 +58,7 @@ const RecipientBrowse = () => {
         urgency: 'medium',
         pickupAvailable: true,
         deliveryAddress: donation.pickupLocation,
-        status: 'approved'
+        status: 'completed'
       };
 
       console.log('Creating request with data:', requestData);
