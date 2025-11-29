@@ -1,12 +1,18 @@
 .auth-page {
   min-height: 100vh;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #10b981 0%, #8b5cf6 100%);
-  padding: 40px 20px;
-  position: relative;
-  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
 }
 
 .auth-page::before {
@@ -24,6 +30,8 @@
   max-width: 480px;
   position: relative;
   z-index: 1;
+  margin: auto;
+  padding: 20px;
 }
 
 .auth-card {
