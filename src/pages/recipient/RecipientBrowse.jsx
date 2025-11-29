@@ -8,7 +8,7 @@ import '../donor/DonorPages.css';
 
 const RecipientBrowse = () => {
   const { user } = useAuth();
-  const { donations, deleteDonation, loading } = useData();
+  const { donations, deleteDonation, createRequest, loading } = useData();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -23,10 +23,26 @@ const RecipientBrowse = () => {
 
   const categories = ['all', 'Vegetables', 'Fruits', 'Bakery', 'Dairy', 'Meat', 'Prepared Food', 'Other'];
 
-  const handleRequest = async (donationId) => {
+  const handleRequest = async (donation) => {
     try {
-      // Delete donation from database when recipient requests it
-      await deleteDonation(donationId);
+      // Create a request from the donation
+      await createRequest({
+        recipientId: user.id,
+        recipientName: user.organization || user.name,
+        title: donation.title,
+        description: donation.description,
+        categories: [donation.category],
+        quantity: donation.weight,
+        unit: donation.unit,
+        urgency: 'medium',
+        pickupAvailable: true,
+        deliveryAddress: donation.pickupLocation,
+        status: 'approved'
+      });
+
+      // Delete the donation from donations collection
+      await deleteDonation(donation.id);
+
       setMessage({ type: 'success', text: 'Request sent successfully! Donation has been claimed.' });
       setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     } catch (error) {
@@ -126,7 +142,7 @@ const RecipientBrowse = () => {
               </div>
 
               <button
-                onClick={() => handleRequest(donation.id)}
+                onClick={() => handleRequest(donation)}
                 className="btn btn-primary btn-full"
                 disabled={loading}
               >
