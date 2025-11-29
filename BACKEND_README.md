@@ -13,14 +13,16 @@ npm install
 
 ### 2. Environment Variables
 
-The `.env` file is already configured with your MongoDB Atlas connection string:
+Create a `.env` file in the `server` directory with the following variables:
 
 ```env
-MONGODB_URI=
+MONGODB_URI=your_mongodb_connection_string_here
 PORT=5000
-JWT_SECRET=your_super_secret_jwt_key_change_this_in_production_2024
+JWT_SECRET=your_secure_jwt_secret_key_here
 NODE_ENV=development
 ```
+
+**Note:** See `server/.env.example` for reference. Never commit the `.env` file to git.
 
 ### 3. Start the Backend Server
 
