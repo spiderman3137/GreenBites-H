@@ -2,6 +2,8 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+console.log('🔧 API Base URL:', API_BASE_URL);
+
 // Create axios instance with default config
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -44,6 +46,7 @@ export const api = {
   },
 
   register: async (userData) => {
+    console.log('📤 Registering user to:', `${API_BASE_URL}/auth/register`);
     const response = await apiClient.post('/auth/register', userData);
     return response.data;
   },

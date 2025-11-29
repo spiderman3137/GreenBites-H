@@ -2,10 +2,8 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-import { initializeDemoData } from './utils/initData'
 
-// Initialize demo data on first load
-initializeDemoData();
+// MongoDB Atlas handles all data - no demo data needed
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
