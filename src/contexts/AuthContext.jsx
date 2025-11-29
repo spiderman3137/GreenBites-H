@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { api } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -15,64 +16,63 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session
-    const savedUser = localStorage.getItem('greenbites_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    // Check for existing token and verify it
+    const initAuth = async () => {
+      const token = localStorage.getItem('greenbites_token');
+      
+      if (token) {
+        try {
+          const data = await api.verifyToken();
+          setUser(data.user);
+        } catch (error) {
+          console.error('Token verification failed:', error);
+          localStorage.removeItem('greenbites_token');
+          localStorage.removeItem('greenbites_user');
+        }
+      }
+      
+      setLoading(false);
+    };
+
+    initAuth();
   }, []);
 
-  const login = (email, password) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // Get users from localStorage
-        const users = JSON.parse(localStorage.getItem('greenbites_users') || '[]');
-        const foundUser = users.find(u => u.email === email && u.password === password);
-
-        if (foundUser) {
-          const { password, ...userWithoutPassword } = foundUser;
-          setUser(userWithoutPassword);
-          localStorage.setItem('greenbites_user', JSON.stringify(userWithoutPassword));
-          resolve(userWithoutPassword);
-        } else {
-          reject(new Error('Invalid email or password'));
-        }
-      }, 800);
-    });
+  const login = async (email, password) => {
+    try {
+      const data = await api.login(email, password);
+      
+      // Store token and user
+      localStorage.setItem('greenbites_token', data.token);
+      localStorage.setItem('greenbites_user', JSON.stringify(data.user));
+      setUser(data.user);
+      
+      return data.user;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw new Error(error.response?.data?.message || 'Login failed');
+    }
   };
 
-  const register = (userData) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const users = JSON.parse(localStorage.getItem('greenbites_users') || '[]');
-        
-        // Check if email already exists
-        if (users.some(u => u.email === userData.email)) {
-          reject(new Error('Email already registered'));
-          return;
-        }
-
-        const newUser = {
-          id: Date.now().toString(),
-          ...userData,
-          createdAt: new Date().toISOString(),
-        };
-
-        users.push(newUser);
-        localStorage.setItem('greenbites_users', JSON.stringify(users));
-
-        const { password, ...userWithoutPassword } = newUser;
-        setUser(userWithoutPassword);
-        localStorage.setItem('greenbites_user', JSON.stringify(userWithoutPassword));
-        resolve(userWithoutPassword);
-      }, 800);
-    });
+  const register = async (userData) => {
+    try {
+      const data = await api.register(userData);
+      
+      // Store token and user
+      localStorage.setItem('greenbites_token', data.token);
+      localStorage.setItem('greenbites_user', JSON.stringify(data.user));
+      setUser(data.user);
+      
+      return data.user;
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw new Error(error.response?.data?.message || 'Registration failed');
+    }
   };
 
   const logout = () => {
-    setUser(null);
+    localStorage.removeItem('greenbites_token');
     localStorage.removeItem('greenbites_user');
+    setUser(null);
   };
 
   return (

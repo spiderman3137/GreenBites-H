@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { api } from '../services/api';
+import { useAuth } from './AuthContext';
 
 const DataContext = createContext(null);
 
@@ -11,119 +13,120 @@ export const useData = () => {
 };
 
 export const DataProvider = ({ children }) => {
+  const { user } = useAuth();
   const [donations, setDonations] = useState([]);
   const [requests, setRequests] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Initialize with sample data if needed
+  // Fetch donations when user changes
   useEffect(() => {
-    const savedDonations = localStorage.getItem('greenbites_donations');
-    const savedRequests = localStorage.getItem('greenbites_requests');
-    
-    if (savedDonations) {
-      setDonations(JSON.parse(savedDonations));
+    if (user) {
+      fetchDonations();
+      fetchRequests();
     }
-    if (savedRequests) {
-      setRequests(JSON.parse(savedRequests));
+  }, [user]);
+
+  const fetchDonations = async () => {
+    try {
+      const data = await api.getDonations();
+      setDonations(data);
+    } catch (error) {
+      console.error('Error fetching donations:', error);
     }
-  }, []);
+  };
+
+  const fetchRequests = async () => {
+    try {
+      const data = await api.getRequests();
+      setRequests(data);
+    } catch (error) {
+      console.error('Error fetching requests:', error);
+    }
+  };
 
   // Donations CRUD
-  const createDonation = (donationData) => {
-    return new Promise((resolve) => {
+  const createDonation = async (donationData) => {
+    try {
       setLoading(true);
-      setTimeout(() => {
-        const newDonation = {
-          id: Date.now().toString(),
-          ...donationData,
-          status: 'available',
-          createdAt: new Date().toISOString(),
-          matches: [],
-        };
-        const updated = [...donations, newDonation];
-        setDonations(updated);
-        localStorage.setItem('greenbites_donations', JSON.stringify(updated));
-        setLoading(false);
-        resolve(newDonation);
-      }, 500);
-    });
+      const newDonation = await api.createDonation(donationData);
+      setDonations(prev => [...prev, newDonation]);
+      return newDonation;
+    } catch (error) {
+      console.error('Error creating donation:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const updateDonation = (id, updates) => {
-    return new Promise((resolve) => {
+  const updateDonation = async (id, updates) => {
+    try {
       setLoading(true);
-      setTimeout(() => {
-        const updated = donations.map(d => 
-          d.id === id ? { ...d, ...updates, updatedAt: new Date().toISOString() } : d
-        );
-        setDonations(updated);
-        localStorage.setItem('greenbites_donations', JSON.stringify(updated));
-        setLoading(false);
-        resolve(updated.find(d => d.id === id));
-      }, 500);
-    });
+      const updated = await api.updateDonation(id, updates);
+      setDonations(prev => prev.map(d => d.id === id ? updated : d));
+      return updated;
+    } catch (error) {
+      console.error('Error updating donation:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const deleteDonation = (id) => {
-    return new Promise((resolve) => {
+  const deleteDonation = async (id) => {
+    try {
       setLoading(true);
-      setTimeout(() => {
-        const updated = donations.filter(d => d.id !== id);
-        setDonations(updated);
-        localStorage.setItem('greenbites_donations', JSON.stringify(updated));
-        setLoading(false);
-        resolve();
-      }, 500);
-    });
+      await api.deleteDonation(id);
+      setDonations(prev => prev.filter(d => d.id !== id));
+    } catch (error) {
+      console.error('Error deleting donation:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Requests CRUD
-  const createRequest = (requestData) => {
-    return new Promise((resolve) => {
+  const createRequest = async (requestData) => {
+    try {
       setLoading(true);
-      setTimeout(() => {
-        const newRequest = {
-          id: Date.now().toString(),
-          ...requestData,
-          status: 'pending',
-          createdAt: new Date().toISOString(),
-        };
-        const updated = [...requests, newRequest];
-        setRequests(updated);
-        localStorage.setItem('greenbites_requests', JSON.stringify(updated));
-        setLoading(false);
-        resolve(newRequest);
-      }, 500);
-    });
+      const newRequest = await api.createRequest(requestData);
+      setRequests(prev => [...prev, newRequest]);
+      return newRequest;
+    } catch (error) {
+      console.error('Error creating request:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const updateRequest = (id, updates) => {
-    return new Promise((resolve) => {
+  const updateRequest = async (id, updates) => {
+    try {
       setLoading(true);
-      setTimeout(() => {
-        const updated = requests.map(r => 
-          r.id === id ? { ...r, ...updates, updatedAt: new Date().toISOString() } : r
-        );
-        setRequests(updated);
-        localStorage.setItem('greenbites_requests', JSON.stringify(updated));
-        setLoading(false);
-        resolve(updated.find(r => r.id === id));
-      }, 500);
-    });
+      const updated = await api.updateRequest(id, updates);
+      setRequests(prev => prev.map(r => r.id === id ? updated : r));
+      return updated;
+    } catch (error) {
+      console.error('Error updating request:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const deleteRequest = (id) => {
-    return new Promise((resolve) => {
+  const deleteRequest = async (id) => {
+    try {
       setLoading(true);
-      setTimeout(() => {
-        const updated = requests.filter(r => r.id !== id);
-        setRequests(updated);
-        localStorage.setItem('greenbites_requests', JSON.stringify(updated));
-        setLoading(false);
-        resolve();
-      }, 500);
-    });
+      await api.deleteRequest(id);
+      setRequests(prev => prev.filter(r => r.id !== id));
+    } catch (error) {
+      console.error('Error deleting request:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Analytics
@@ -160,6 +163,8 @@ export const DataProvider = ({ children }) => {
         updateRequest,
         deleteRequest,
         getAnalytics,
+        refreshDonations: fetchDonations,
+        refreshRequests: fetchRequests,
       }}
     >
       {children}
