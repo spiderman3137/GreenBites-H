@@ -197,21 +197,6 @@ body {
   color: var(--text-primary);
 }
 
-.form-select.role-select {
-  font-weight: 500;
-  padding: 14px 16px;
-  cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 44px;
-}
-
-.form-select.role-select option {
-  padding: 12px;
-  font-weight: 500;
-}
-
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {

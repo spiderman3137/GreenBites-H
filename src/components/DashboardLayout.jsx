@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { 
   Leaf, LogOut, User, Search, Moon, Sun,
   LayoutDashboard, Package, Users, TrendingUp,
-  Settings, Heart, BarChart3, Bell
+  Settings, Heart, BarChart3
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import './DashboardLayout.css';
@@ -14,29 +14,6 @@ const DashboardLayout = ({ children, role }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
-  const [showMessages, setShowMessages] = useState(false);
-
-  const roleMessages = {
-    admin: [
-      { id: 1, text: 'New donation request pending approval', time: '5 min ago', unread: true },
-      { id: 2, text: 'System backup completed successfully', time: '2 hours ago', unread: false },
-    ],
-    donor: [
-      { id: 1, text: 'Your donation has been accepted by City Food Bank', time: '10 min ago', unread: true },
-      { id: 2, text: 'Reminder: Schedule pickup for tomorrow', time: '1 hour ago', unread: true },
-    ],
-    recipient: [
-      { id: 1, text: 'New food donation available nearby', time: '3 min ago', unread: true },
-      { id: 2, text: 'Your request has been approved', time: '30 min ago', unread: true },
-    ],
-    analyst: [
-      { id: 1, text: 'Monthly report data is ready', time: '15 min ago', unread: true },
-      { id: 2, text: 'New trends detected in donation patterns', time: '1 hour ago', unread: false },
-    ],
-  };
-
-  const messages = roleMessages[role] || [];
-  const unreadCount = messages.filter(m => m.unread).length;
 
   useEffect(() => {
     const savedMode = localStorage.getItem('darkMode') === 'true';
@@ -146,34 +123,6 @@ const DashboardLayout = ({ children, role }) => {
             <input type="text" placeholder="Search..." />
           </div>
           <div className="header-actions">
-            <div className="messages-container">
-              <button 
-                className="icon-btn" 
-                onClick={() => setShowMessages(!showMessages)}
-                title="Messages"
-              >
-                <Bell size={20} />
-                {unreadCount > 0 && (
-                  <span className="notification-badge">{unreadCount}</span>
-                )}
-              </button>
-              {showMessages && (
-                <div className="messages-dropdown">
-                  <div className="messages-header">
-                    <h3>Messages</h3>
-                    <span className="unread-count">{unreadCount} unread</span>
-                  </div>
-                  <div className="messages-list">
-                    {messages.map(msg => (
-                      <div key={msg.id} className={`message-item ${msg.unread ? 'unread' : ''}`}>
-                        <div className="message-text">{msg.text}</div>
-                        <div className="message-time">{msg.time}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
             <button className="icon-btn" onClick={toggleDarkMode} title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
               {darkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>

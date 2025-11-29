@@ -226,16 +226,17 @@ const RegisterPage = () => {
               <div className="form-group">
                 <label className="form-label">
                   <User size={16} />
-                  Select Your Role
+                  Role
                 </label>
                 <select
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className="form-select role-select"
+                  className="form-select"
                 >
-                  <option value="donor">🍽️ Food Donor - Share surplus food</option>
-                  <option value="recipient">🏢 Recipient Organization - Request food donations</option>
+                  <option value="donor">Food Donor</option>
+                  <option value="recipient">Recipient Organization</option>
+                  <option value="analyst">Data Analyst</option>
                 </select>
               </div>
             </div>
