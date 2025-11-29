@@ -54,8 +54,8 @@ const LandingPage = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <Leaf size={20} />
-            <span>Sustainable Food Security Platform</span>
+            <Leaf size={24} />
+            <span>GreenBites</span>
           </motion.div>
           
           <h1 className="hero-title">
