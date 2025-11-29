@@ -1,7 +1,8 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import { 
-  Leaf, LogOut, User, Bell, Search,
+  Leaf, LogOut, User, Search, Moon, Sun,
   LayoutDashboard, Package, Users, TrendingUp,
   Settings, Heart, BarChart3
 } from 'lucide-react';
@@ -12,6 +13,26 @@ const DashboardLayout = ({ children, role }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    const savedMode = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(savedMode);
+    if (savedMode) {
+      document.documentElement.classList.add('dark-mode');
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem('darkMode', newMode);
+    if (newMode) {
+      document.documentElement.classList.add('dark-mode');
+    } else {
+      document.documentElement.classList.remove('dark-mode');
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -102,9 +123,8 @@ const DashboardLayout = ({ children, role }) => {
             <input type="text" placeholder="Search..." />
           </div>
           <div className="header-actions">
-            <button className="icon-btn">
-              <Bell size={20} />
-              <span className="notification-badge">3</span>
+            <button className="icon-btn" onClick={toggleDarkMode} title={darkMode ? 'Light Mode' : 'Dark Mode'}>
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             <button className="icon-btn">
               <User size={20} />
