@@ -8,7 +8,7 @@ import '../donor/DonorPages.css';
 
 const RecipientBrowse = () => {
   const { user } = useAuth();
-  const { donations, updateDonation, loading } = useData();
+  const { donations, deleteDonation, loading } = useData();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -25,14 +25,14 @@ const RecipientBrowse = () => {
 
   const handleRequest = async (donationId) => {
     try {
-      await updateDonation(donationId, {
-        status: 'matched',
-        matches: [user.id],
-      });
-      setMessage({ type: 'success', text: 'Request sent successfully!' });
+      // Delete donation from database when recipient requests it
+      await deleteDonation(donationId);
+      setMessage({ type: 'success', text: 'Request sent successfully! Donation has been claimed.' });
       setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     } catch (error) {
-      setMessage({ type: 'error', text: error.message });
+      console.error('Request error:', error);
+      setMessage({ type: 'error', text: 'Failed to send request. Please try again.' });
+      setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     }
   };
 
@@ -50,8 +50,9 @@ const RecipientBrowse = () => {
           className={`alert alert-${message.type}`}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
         >
-          <Heart size={20} />
+          {message.type === 'success' ? <Heart size={20} /> : <Package size={20} />}
           <span>{message.text}</span>
         </motion.div>
       )}
