@@ -16,7 +16,7 @@ npm install
 The `.env` file is already configured with your MongoDB Atlas connection string:
 
 ```env
-MONGODB_URI=mongodb+srv://spiderman3137_db_user:TOs6MQi0WhBcWRKd@cluster0.hnfocv4.mongodb.net/greenbites?retryWrites=true&w=majority&appName=Cluster0
+MONGODB_URI=
 PORT=5000
 JWT_SECRET=your_super_secret_jwt_key_change_this_in_production_2024
 NODE_ENV=development
