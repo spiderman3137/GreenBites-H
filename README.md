@@ -1,7 +1,7 @@
 # GreenBites - Food Waste Reduction Platform
 
 A comprehensive platform to track and reduce food waste, connecting food donors with recipient organizations while providing powerful analytics to improve food security.
-
+React19 and react routerv6.
 ## 🌟 Features
 
 ### Multi-Role System
